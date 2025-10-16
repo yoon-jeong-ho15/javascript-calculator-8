@@ -1,10 +1,4 @@
-import {
-  checkSeparator,
-  findSeparator,
-  getNumbers,
-  getResult,
-  removeSpace,
-} from "../src/calc.js";
+import { removeSpace } from "../src/add.js";
 
 test("removeSpace 테스트", () => {
   const input = "1 ,  2, 3";
