@@ -9,7 +9,9 @@ export function getResult(input) {
 
 export function validateInput(input) {
   input = removeSpace(input);
-  const arr = replaceSeparator(input).split(",");
+  input = replaceSeparator(input);
+
+  const arr = input.split(",");
   const result = [];
   for (const num of arr) {
     result.push(convertToNumber(num));
@@ -23,17 +25,13 @@ function removeSpace(input) {
 
 export function replaceSeparator(input) {
   if (!input.includes("\\n")) {
-    if (/[^0-9,:]/.test(input))
-      throw new Error(`[ERROR] 커스텀 구분자를 지정하세요`);
-    return input.replaceAll(":", ",");
+    return checkSeparator(input.replaceAll(":", ","));
   }
   let [separator, str] = input.split("\\n");
   separator = getSeparator(separator);
   separator += ":";
   const regex = new RegExp(`[${separator}]`, "g");
-  console.log("-----regex : ", regex);
-  console.log("-----str : ", str);
-  return str.replaceAll(regex, ",");
+  return checkSeparator(str.replaceAll(regex, ","));
 }
 
 function getSeparator(seperator) {
@@ -42,15 +40,21 @@ function getSeparator(seperator) {
       `[ERROR] 커스텀 구분자를 사용하려면 앞에 "//"를 입력해주세요`
     );
   }
-  return checkSeparator(seperator.substr(2));
+  return validateSeparator(seperator.substr(2));
 }
 
-function checkSeparator(separator) {
+function validateSeparator(separator) {
   for (const ch of separator) {
     if (FORBIDDEN.includes(ch))
       throw new Error(`[ERROR] ${ch} 는 커스텀 구분자로 사용할 수 없습니다.`);
   }
   return separator;
+}
+
+function checkSeparator(str) {
+  if (/[^0-9,:]/.test(str))
+    throw new Error(`[ERROR] 커스텀 구분자를 지정하세요`);
+  return str;
 }
 
 function convertToNumber(num) {
