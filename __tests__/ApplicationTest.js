@@ -17,27 +17,55 @@ const getLogSpy = () => {
 };
 
 describe("문자열 계산기", () => {
-  test("커스텀 구분자 사용", async () => {
-    const inputs = ["//;\\n1"];
-    mockQuestions(inputs);
+  describe("정상", () => {
+    test("커스텀 구분자 사용", async () => {
+      const inputs = ["//;\\n1;2;3"];
+      mockQuestions(inputs);
 
-    const logSpy = getLogSpy();
-    const outputs = ["결과 : 1"];
+      const logSpy = getLogSpy();
+      const outputs = ["결과 : 6"];
 
-    const app = new App();
-    await app.run();
+      const app = new App();
+      await app.run();
 
-    outputs.forEach((output) => {
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(output));
+      outputs.forEach((output) => {
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(output));
+      });
+    });
+
+    test("기본 구분자 사용", async () => {
+      const inputs = ["1:2,3"];
+      mockQuestions(inputs);
+
+      const logSpy = getLogSpy();
+      const outputs = ["결과 : 6"];
+
+      const app = new App();
+      await app.run();
+
+      outputs.forEach((output) => {
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(output));
+      });
     });
   });
 
-  test("예외 테스트", async () => {
-    const inputs = ["-1,2,3"];
-    mockQuestions(inputs);
+  describe("에러", () => {
+    test("금지 구분자 사용", async () => {
+      const inputs = ["//;-\\n1"];
+      mockQuestions(inputs);
 
-    const app = new App();
+      const app = new App();
+      await expect(app.run()).rejects.toThrow("[ERROR]");
+    });
 
-    await expect(app.run()).rejects.toThrow("[ERROR]");
+    test("구분자 미지정 사용", async () => {
+      const inputs = ["//;\\n1,2&3"];
+      mockQuestions(inputs);
+
+      const app = new App();
+      await expect(app.run()).rejects.toThrow(
+        `[ERROR] 커스텀 구분자를 지정하세요`
+      );
+    });
   });
 });
