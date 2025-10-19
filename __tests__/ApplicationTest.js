@@ -18,6 +18,36 @@ const getLogSpy = () => {
 
 describe("문자열 계산기", () => {
   describe("정상", () => {
+    test("숫자들 사이에 공백", async () => {
+      const inputs = ["//;\\n1   ;2 ;  3   "];
+      mockQuestions(inputs);
+
+      const logSpy = getLogSpy();
+      const outputs = ["결과 : 6"];
+
+      const app = new App();
+      await app.run();
+
+      outputs.forEach((output) => {
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(output));
+      });
+    });
+
+    test("커스텀 구분자에 공백", async () => {
+      const inputs = ["// ; \\n1;2;3"];
+      mockQuestions(inputs);
+
+      const logSpy = getLogSpy();
+      const outputs = ["결과 : 6"];
+
+      const app = new App();
+      await app.run();
+
+      outputs.forEach((output) => {
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(output));
+      });
+    });
+
     test("커스텀 구분자 사용", async () => {
       const inputs = ["//;\\n1;2;3"];
       mockQuestions(inputs);
