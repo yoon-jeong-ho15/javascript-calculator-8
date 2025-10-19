@@ -47,6 +47,36 @@ describe("문자열 계산기", () => {
         expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(output));
       });
     });
+
+    test("십 단위 덧셈", async () => {
+      const inputs = ["11:22,33"];
+      mockQuestions(inputs);
+
+      const logSpy = getLogSpy();
+      const outputs = ["결과 : 66"];
+
+      const app = new App();
+      await app.run();
+
+      outputs.forEach((output) => {
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(output));
+      });
+    });
+
+    test("백 단위 덧셈", async () => {
+      const inputs = ["111:222,333"];
+      mockQuestions(inputs);
+
+      const logSpy = getLogSpy();
+      const outputs = ["결과 : 666"];
+
+      const app = new App();
+      await app.run();
+
+      outputs.forEach((output) => {
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining(output));
+      });
+    });
   });
 
   describe("에러", () => {
@@ -64,7 +94,27 @@ describe("문자열 계산기", () => {
 
       const app = new App();
       await expect(app.run()).rejects.toThrow(
-        `[ERROR] 커스텀 구분자를 지정하세요`
+        `[ERROR] '&'는 지정하지 않은 구분자입니다.`
+      );
+    });
+
+    test("구분자 지정 형식 오류 : \\\\n 대신 \\n", async () => {
+      const inputs = ["//;\n1,2;3"];
+      mockQuestions(inputs);
+
+      const app = new App();
+      await expect(app.run()).rejects.toThrow(
+        `[ERROR] '/'는 지정하지 않은 구분자입니다.`
+      );
+    });
+
+    test("구분자 지정 형식 오류 : // 미사용", async () => {
+      const inputs = ["/;\\n1,2;3"];
+      mockQuestions(inputs);
+
+      const app = new App();
+      await expect(app.run()).rejects.toThrow(
+        `[ERROR] 커스텀 구분자를 사용하려면 앞에 "//"를 입력해주세요`
       );
     });
   });
